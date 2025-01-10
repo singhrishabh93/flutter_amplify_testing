@@ -6,10 +6,15 @@
     },
     "button": {
       "text": "Send the code",
-      "backgroundColor": "0xFF4CAF50",
-      "width": 350.0,
-      "height": 50.0,
-      "borderRadius": 10.0
+      "backgroundColor": "0xFF009688",
+      "width": 400.0,
+      "height": 60.0,
+      "borderRadius": 15.0,
+      "alignment": "bottomCenter",
+      "margin": {
+        "top": 0.0,
+        "bottom": 20.0
+      }
     }
   }
   
