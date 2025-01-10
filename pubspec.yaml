@@ -38,6 +38,9 @@ dependencies:
   pinput: ^5.0.0
   mirai: ^0.8.0
   http: ^1.2.2
+  amplify_flutter: ^2.5.0
+  amplify_auth_cognito: ^2.5.0
+  amplify_core: ^2.5.0
 
 dev_dependencies:
   flutter_test:
