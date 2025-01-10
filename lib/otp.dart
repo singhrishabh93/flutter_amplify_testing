@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:pinput/pinput.dart';
+import 'dart:convert';
+import 'package:flutter/services.dart';
 
 class MyVerify extends StatefulWidget {
   const MyVerify({Key? key}) : super(key: key);
@@ -9,32 +11,45 @@ class MyVerify extends StatefulWidget {
 }
 
 class _MyVerifyState extends State<MyVerify> {
+  Map<String, dynamic>? jsonData;
+
+  @override
+  void initState() {
+    super.initState();
+    loadJson();
+  }
+
+  Future<void> loadJson() async {
+    try {
+      final String jsonString = await rootBundle.loadString("assets/otp.json");
+      setState(() {
+        jsonData = jsonDecode(jsonString);
+      });
+    } catch (e) {
+      print("Error loading JSON: $e");
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
+    // Default Pin Theme
     final defaultPinTheme = PinTheme(
       width: 56,
       height: 56,
       textStyle: TextStyle(
-          fontSize: 20,
-          color: Color.fromRGBO(30, 60, 87, 1),
-          fontWeight: FontWeight.w600),
+        fontSize: 20,
+        color: Color.fromRGBO(30, 60, 87, 1),
+        fontWeight: FontWeight.w600,
+      ),
       decoration: BoxDecoration(
-        border: Border.all(color: Color.fromRGBO(234, 239, 243, 1)),
+        border: Border.all(
+          color: Color.fromRGBO(234, 239, 243, 1),
+        ),
         borderRadius: BorderRadius.circular(20),
       ),
     );
 
-    final focusedPinTheme = defaultPinTheme.copyDecorationWith(
-      border: Border.all(color: Color.fromRGBO(114, 178, 238, 1)),
-      borderRadius: BorderRadius.circular(8),
-    );
-
-    final submittedPinTheme = defaultPinTheme.copyWith(
-      decoration: defaultPinTheme.decoration?.copyWith(
-        color: Color.fromRGBO(234, 239, 243, 1),
-      ),
-    );
-
+    // Handle OTP input
     return Scaffold(
       extendBodyBehindAppBar: true,
       appBar: AppBar(
@@ -57,11 +72,12 @@ class _MyVerifyState extends State<MyVerify> {
           child: Column(
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
-              Image.asset(
-                'assets/img1.png',
-                width: 150,
-                height: 150,
-              ),
+              if (jsonData != null && jsonData!["image"] != null)
+                Image.asset(
+                  jsonData!["image"]["src"],
+                  width: (jsonData!["image"]["width"] as num).toDouble(),
+                  height: (jsonData!["image"]["height"] as num).toDouble(),
+                ),
               SizedBox(
                 height: 25,
               ),
@@ -82,51 +98,53 @@ class _MyVerifyState extends State<MyVerify> {
               SizedBox(
                 height: 30,
               ),
-              Pinput(
-                length: 6,
-                // defaultPinTheme: defaultPinTheme,
-                // focusedPinTheme: focusedPinTheme,
-                // submittedPinTheme: submittedPinTheme,
-
-                showCursor: true,
-                onCompleted: (pin) => print(pin),
-              ),
+              if (jsonData != null && jsonData!["otpInput"] != null)
+                Pinput(
+                  length: 6,
+                  defaultPinTheme: defaultPinTheme,
+                  showCursor: jsonData!["otpInput"]["showCursor"] ?? true,
+                  onCompleted: (pin) => print(pin),
+                ),
               SizedBox(
                 height: 20,
               ),
-              SizedBox(
-                width: double.infinity,
-                height: 45,
-                child: ElevatedButton(
+              if (jsonData != null && jsonData!["button"] != null)
+                SizedBox(
+                  width: (jsonData!["button"]["width"] as num).toDouble(),
+                  height: (jsonData!["button"]["height"] as num).toDouble(),
+                  child: ElevatedButton(
                     style: ElevatedButton.styleFrom(
-                        backgroundColor: Colors.green.shade600,
-                        shape: RoundedRectangleBorder(
-                            borderRadius: BorderRadius.circular(10))),
+                      backgroundColor: Color(int.parse(
+                          jsonData!["button"]["backgroundColor"])),
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(
+                          (jsonData!["button"]["borderRadius"] as num).toDouble(),
+                        ),
+                      ),
+                    ),
                     onPressed: () {
-                      // Navigator.push(
-                      //   context,
-                      //   MaterialPageRoute(
-                      //       builder: (context) => const MyVerify()),
-                      // );
+                      // Button functionality (this can be navigational or any action)
                     },
-                    child: Text("Verify Phone Number")),
-              ),
+                    child: Text(jsonData!["button"]["text"]),
+                  ),
+                ),
               Row(
                 children: [
                   TextButton(
-                      onPressed: () {
-                        Navigator.pushNamedAndRemoveUntil(
-                          context,
-                          'phone',
-                          (route) => false,
-                        );
-                      },
-                      child: Text(
-                        "Edit Phone Number ?",
-                        style: TextStyle(color: Colors.black),
-                      ))
+                    onPressed: () {
+                      Navigator.pushNamedAndRemoveUntil(
+                        context,
+                        'phone',
+                        (route) => false,
+                      );
+                    },
+                    child: Text(
+                      "Edit Phone Number?",
+                      style: TextStyle(color: Colors.black),
+                    ),
+                  ),
                 ],
-              )
+              ),
             ],
           ),
         ),

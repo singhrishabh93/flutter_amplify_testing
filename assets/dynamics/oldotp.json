@@ -1,0 +1,25 @@
+{
+    "image": {
+      "src": "assets/img1.png",
+      "width": 150.0,
+      "height": 150.0
+    },
+    "otpInput": {
+      "showCursor": true,
+      "borderColor": "0xFFEAF0F3",
+      "borderRadius": 20.0
+    },
+    "button": {
+      "text": "Verify Phone Number",
+      "backgroundColor": "0xFF4CAF50",
+      "width": 350.0,
+      "height": 50.0,
+      "borderRadius": 10.0,
+      "alignment": "center",
+      "margin": {
+        "top": 20.0,
+        "bottom": 20.0
+      }
+    }
+  }
+  
