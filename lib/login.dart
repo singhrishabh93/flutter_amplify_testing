@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
+import 'dart:convert';
 import 'package:flutter_amplify_testing/otp.dart';
 
 class MyPhone extends StatefulWidget {
@@ -10,112 +12,116 @@ class MyPhone extends StatefulWidget {
 
 class _MyPhoneState extends State<MyPhone> {
   TextEditingController countryController = TextEditingController();
+  Map<String, dynamic>? jsonData;
 
   @override
   void initState() {
-    // TODO: implement initState
     countryController.text = "+91";
     super.initState();
+    loadJson();
+  }
+
+  Future<void> loadJson() async {
+    try {
+      final String jsonString =
+          await rootBundle.loadString("assets/login.json");
+      setState(() {
+        jsonData = jsonDecode(jsonString);
+      });
+    } catch (e) {
+      print("Error loading JSON: $e");
+    }
   }
 
   @override
-  Widget build(BuildContext context) {
-    return Scaffold(
-      body: Container(
-        margin: EdgeInsets.only(left: 25, right: 25),
-        alignment: Alignment.center,
-        child: SingleChildScrollView(
-          child: Column(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: [
+Widget build(BuildContext context) {
+  return Scaffold(
+    body: Container(
+      margin: const EdgeInsets.only(left: 25, right: 25),
+      alignment: Alignment.center,
+      child: SingleChildScrollView(
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            // Image loaded from JSON
+            if (jsonData != null && jsonData!["image"] != null)
               Image.asset(
-                'assets/img1.png',
-                width: 150,
-                height: 150,
+                jsonData!["image"]["src"],
+                width: (jsonData!["image"]["width"] as num).toDouble(),
+                height: (jsonData!["image"]["height"] as num).toDouble(),
               ),
-              SizedBox(
-                height: 25,
+            const SizedBox(height: 25),
+            const Text(
+              "Phone Verification",
+              style: TextStyle(fontSize: 22, fontWeight: FontWeight.bold),
+            ),
+            const SizedBox(height: 10),
+            const Text(
+              "We need to register your phone without getting started!",
+              style: TextStyle(fontSize: 16),
+              textAlign: TextAlign.center,
+            ),
+            const SizedBox(height: 30),
+            Container(
+              height: 55,
+              decoration: BoxDecoration(
+                border: Border.all(width: 1, color: Colors.grey),
+                borderRadius: BorderRadius.circular(10),
               ),
-              Text(
-                "Phone Verification",
-                style: TextStyle(fontSize: 22, fontWeight: FontWeight.bold),
-              ),
-              SizedBox(
-                height: 10,
-              ),
-              Text(
-                "We need to register your phone without getting started!",
-                style: TextStyle(
-                  fontSize: 16,
-                ),
-                textAlign: TextAlign.center,
-              ),
-              SizedBox(
-                height: 30,
-              ),
-              Container(
-                height: 55,
-                decoration: BoxDecoration(
-                    border: Border.all(width: 1, color: Colors.grey),
-                    borderRadius: BorderRadius.circular(10)),
-                child: Row(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: [
-                    SizedBox(
-                      width: 10,
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  const SizedBox(width: 10),
+                  SizedBox(
+                    width: 40,
+                    child: TextField(
+                      controller: countryController,
+                      keyboardType: TextInputType.number,
+                      decoration: const InputDecoration(border: InputBorder.none),
                     ),
-                    SizedBox(
-                      width: 40,
-                      child: TextField(
-                        controller: countryController,
-                        keyboardType: TextInputType.number,
-                        decoration: InputDecoration(
-                          border: InputBorder.none,
-                        ),
-                      ),
-                    ),
-                    Text(
-                      "|",
-                      style: TextStyle(fontSize: 33, color: Colors.grey),
-                    ),
-                    SizedBox(
-                      width: 10,
-                    ),
-                    Expanded(
-                        child: TextField(
+                  ),
+                  const Text("|", style: TextStyle(fontSize: 33, color: Colors.grey)),
+                  const SizedBox(width: 10),
+                  const Expanded(
+                    child: TextField(
                       keyboardType: TextInputType.phone,
                       decoration: InputDecoration(
                         border: InputBorder.none,
                         hintText: "Phone",
                       ),
-                    ))
-                  ],
+                    ),
+                  ),
+                ],
+              ),
+            ),
+            const SizedBox(height: 20),
+            // Button loaded from JSON
+            if (jsonData != null && jsonData!["button"] != null)
+              SizedBox(
+                width: (jsonData!["button"]["width"] as num).toDouble(),
+                height: (jsonData!["button"]["height"] as num).toDouble(),
+                child: ElevatedButton(
+                  style: ElevatedButton.styleFrom(
+                    backgroundColor: Color(int.parse(jsonData!["button"]["backgroundColor"])),
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(
+                        (jsonData!["button"]["borderRadius"] as num).toDouble(),
+                      ),
+                    ),
+                  ),
+                  onPressed: () {
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(builder: (context) => const MyVerify()),
+                    );
+                  },
+                  child: Text(jsonData!["button"]["text"]),
                 ),
               ),
-              SizedBox(
-                height: 20,
-              ),
-              SizedBox(
-                width: double.infinity,
-                height: 45,
-                child: ElevatedButton(
-                    style: ElevatedButton.styleFrom(
-                        backgroundColor: Colors.green.shade600,
-                        shape: RoundedRectangleBorder(
-                            borderRadius: BorderRadius.circular(10))),
-                    onPressed: () {
-                      Navigator.push(
-                        context,
-                        MaterialPageRoute(
-                            builder: (context) => const MyVerify()),
-                      );
-                    },
-                    child: Text("Send the code")),
-              )
-            ],
-          ),
+          ],
         ),
       ),
-    );
-  }
+    ),
+  );
+}
 }

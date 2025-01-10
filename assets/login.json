@@ -1,0 +1,15 @@
+{
+    "image": {
+      "src": "assets/img1.png",
+      "width": 150.0,
+      "height": 150.0
+    },
+    "button": {
+      "text": "Send the code",
+      "backgroundColor": "0xFF4CAF50",
+      "width": 350.0,
+      "height": 50.0,
+      "borderRadius": 10.0
+    }
+  }
+  
