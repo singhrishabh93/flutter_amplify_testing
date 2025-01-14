@@ -35,25 +35,39 @@ class _MyPhoneState extends State<MyPhone> {
   }
 
   Future<void> sendOTP() async {
-    final String phoneNumber = "${countryController.text}${phoneController.text}";
-    final String url =
-        "https://3jhuhkyubc.execute-api.us-east-1.amazonaws.com/dev/otp/create?phoneNumber=$phoneNumber";
-    try {
-      final response = await http.get(Uri.parse(url));
-      final data = jsonDecode(response.body);
-      print("OTP Response: ${data['message']}");
-      if (response.statusCode == 200) {
-        Navigator.push(
-          context,
-          MaterialPageRoute(
-            builder: (context) => MyVerify(phoneNumber: phoneNumber),
-          ),
-        );
-      }
-    } catch (e) {
-      print("Error sending OTP: $e");
-    }
+  final String phoneNumber = "${countryController.text}${phoneController.text}";
+
+  // Validate if phone number is not empty
+  if (phoneNumber.isEmpty || phoneController.text.isEmpty) {
+    // Show an error message or alert
+    ScaffoldMessenger.of(context).showSnackBar(
+      const SnackBar(content: Text("Please enter a valid phone number")),
+    );
+    return; // Exit the method if phone number is invalid
   }
+
+  final String url =
+      "https://3jhuhkyubc.execute-api.us-east-1.amazonaws.com/dev/otp/create?phoneNumber=$phoneNumber";
+  try {
+    final response = await http.get(Uri.parse(url));
+    final data = jsonDecode(response.body);
+    print("OTP Response: ${data['message']}");
+    if (response.statusCode == 200) {
+      Navigator.push(
+        context,
+        MaterialPageRoute(
+          builder: (context) => MyVerify(phoneNumber: phoneNumber),
+        ),
+      );
+    }
+  } catch (e) {
+    print("Error sending OTP: $e");
+    ScaffoldMessenger.of(context).showSnackBar(
+      const SnackBar(content: Text("Error sending OTP")),
+    );
+  }
+}
+
 
   @override
   Widget build(BuildContext context) {
