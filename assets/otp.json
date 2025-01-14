@@ -1,25 +1,17 @@
 {
-    "image": {
-      "src": "assets/img1.png",
-      "width": 150.0,
-      "height": 150.0
-    },
-    "otpInput": {
-      "showCursor": true,
-      "borderColor": "0xFFEAF0F3",
-      "borderRadius": 20.0
-    },
-    "button": {
-      "text": "Verify Phone Number",
-      "backgroundColor": "0xFF1976D2", 
-      "width": 400.0, 
-      "height": 60.0, 
-      "borderRadius": 15.0,
-      "alignment": "bottomCenter", 
-      "margin": {
-        "top": 30.0, 
-        "bottom": 20.0
-      }
-    }
+  "image": {
+    "src": "assets/img1.png",
+    "width": 150,
+    "height": 150
+  },
+  "otpInput": {
+    "showCursor": true
+  },
+  "button": {
+    "text": "Verify",
+    "width": 200,
+    "height": 50,
+    "backgroundColor": "0xFF0000FF",
+    "borderRadius": 10
   }
-  
+}
